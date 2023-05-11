@@ -1,0 +1,876 @@
+{
+	"info": {
+		"_postman_id": "4e7003ac-6b71-4174-8312-815e411081bd",
+		"name": "Grocery",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20193986"
+	},
+	"item": [
+		{
+			"name": "Add item to the cart, replace it and remove",
+			"item": [
+				{
+					"name": "Available products",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response = pm.response.json()\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// pm.test('Name contains Starbucks', ()=>{\r",
+									"//     pm.expect(response.name).to.contain('Starbucks')\r",
+									"// })\r",
+									"\r",
+									"// pm.test('Price should be a number', ()=>{\r",
+									"//     pm.expect(response.price).to.be.a(\"number\")\r",
+									"// })\r",
+									"\r",
+									"pm.test('Each product is available', ()=>{\r",
+									"    for(let i=0; i<response.length; i++){\r",
+									"        console.log(response[i])\r",
+									"        pm.expect(response[i].inStock).to.be.a('boolean')\r",
+									"        pm.expect(response[i].inStock).to.be.true\r",
+									"    }\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/products?available=true",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"products"
+							],
+							"query": [
+								{
+									"key": "available",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json()\r",
+									"\r",
+									"pm.collectionVariables.set('MyCartId', response.cartId);\r",
+									"\r",
+									"pm.test('Cart is created', ()=>{\r",
+									"    pm.expect(response.created).to.be.true\r",
+									"})\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/carts",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"carts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add items to cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json()\r",
+									"var req = pm.request.body\r",
+									"\r",
+									"var reqObj = JSON.parse(req.raw)\r",
+									"\r",
+									"console.log(reqObj)\r",
+									"\r",
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test('Item is added', ()=>{\r",
+									"    pm.expect(response.created).to.be.true\r",
+									"})\r",
+									"\r",
+									"\r",
+									"pm.collectionVariables.set(\"OrderedItem\", reqObj.productId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"productId\": 4643\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/carts/{{MyCartId}}/items",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"carts",
+								"{{MyCartId}}",
+								"items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get cart items",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response = pm.response.json()\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.collectionVariables.set(\"ItemInBasketId\", response[0].id);\r",
+									"\r",
+									"pm.test(\"1 item is added\", ()=>{\r",
+									"    pm.expect(response[0].quantity).to.be.a(\"number\")\r",
+									"    pm.expect(response[0].quantity).to.eql(1)\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/carts/{{MyCartId}}/items",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"carts",
+								"{{MyCartId}}",
+								"items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "register client(do not run in runner)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"clientName\": \"My PC\",\r\n   \"clientEmail\": \"post@practice.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api-clients",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api-clients"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Opdate order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"customerName\" : \"I .C Wieners\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/orders/:orderId",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"orders",
+								":orderId"
+							],
+							"variable": [
+								{
+									"key": "orderId",
+									"value": "tcH0vOxOUPlpZ4qYM_OcM"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response = pm.response.json()\r",
+									"\r",
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test('Order was created', ()=>{\r",
+									"    pm.expect(response.created).to.be.true\r",
+									"})\r",
+									"\r",
+									"pm.collectionVariables.set(\"lastOrderId\", response.orderId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cartId\": \"{{MyCartId}}\",\r\n    \"customerName\": \"{{$randomFullName}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/orders",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all orders",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let resp = pm.response.json()\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('At least 1 item was ordered',()=>{\r",
+									"    pm.expect(resp.length).to.be.above(0)\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Last ordered product is correct\", ()=>{\r",
+									"    pm.expect(resp).to.be.an(\"array\")\r",
+									"    if(resp.length > 1){\r",
+									"        pm.expect(resp[resp.length-1]).to.haveOwnProperty('items')\r",
+									"        pm.expect(resp[resp.length-1].items[0].productId).to.eql(pm.collectionVariables.get(\"OrderedItem\"))\r",
+									"    }\r",
+									"    else{\r",
+									"        pm.expect(resp[0]).to.haveOwnProperty('items')\r",
+									"        pm.expect(resp[0].items[0].productId).to.eql(pm.collectionVariables.get(\"OrderedItem\"))\r",
+									"    }\r",
+									"})\r",
+									"\r",
+									"pm.test('Last order is on orders list', ()=>{\r",
+									"    let isOnList = false\r",
+									"    for(let i=0; i<resp.length; i++){\r",
+									"        if(resp[i].id == pm.collectionVariables.get(\"lastOrderId\")){\r",
+									"            isOnList = true\r",
+									"        }\r",
+									"    }\r",
+									"    pm.expect(isOnList).to.be.true\r",
+									"})\r",
+									"\r",
+									"\r",
+									"pm.test(\"Each order has customer name assigned\", ()=>{\r",
+									"    pm.expect(resp).to.be.an(\"array\")\r",
+									"    resp.forEach(order =>{\r",
+									"        pm.expect(order).to.haveOwnProperty(\"customerName\")\r",
+									"    })\r",
+									"})\r",
+									"\r",
+									"//If property name is dynamicly changing\r",
+									"\r",
+									"let itemsArr\r",
+									"for(let key in resp[0]){\r",
+									"    //console.log(key, resp[0][key])\r",
+									"    if(Array.isArray(resp[0][key])){\r",
+									"        itemsArr = resp[0][key]\r",
+									"    }\r",
+									"}\r",
+									"//Here, it's accesed\r",
+									"console.log(itemsArr)\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/orders",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post cart Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json()\r",
+									"\r",
+									"pm.collectionVariables.set('MyCartId', response.cartId);\r",
+									"\r",
+									"pm.test('Cart is created', ()=>{\r",
+									"    pm.expect(response.created).to.be.true\r",
+									"})\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/carts",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"carts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add items to cart Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json()\r",
+									"\r",
+									"var body = pm.request.body;\r",
+									"\r",
+									"pm.test('An item is passed to the basket', ()=>{\r",
+									"    pm.expect(body).to.be.an(\"object\")\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test('Item is added', ()=>{\r",
+									"    pm.expect(response.created).to.be.true\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"productId\": 4643\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/carts/{{MyCartId}}/items",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"carts",
+								"{{MyCartId}}",
+								"items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get cart items Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response = pm.response.json()\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.collectionVariables.set(\"ItemInBasketId\", response[0].id);\r",
+									"\r",
+									"pm.test(\"1 item is added\", ()=>{\r",
+									"    pm.expect(response[0].quantity).to.be.a(\"number\")\r",
+									"    pm.expect(response[0].quantity).to.eql(1)\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/carts/{{MyCartId}}/items",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"carts",
+								"{{MyCartId}}",
+								"items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Replace item in cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"productId\" : 4641\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/carts/:cartId/items/:itemId",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"carts",
+								":cartId",
+								"items",
+								":itemId"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "{{MyCartId}}"
+								},
+								{
+									"key": "itemId",
+									"value": "{{ItemInBasketId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove item from cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/carts/:cartId/items/:itemId",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"carts",
+								":cartId",
+								"items",
+								":itemId"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "{{MyCartId}}"
+								},
+								{
+									"key": "itemId",
+									"value": "{{ItemInBasketId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Verify if error message is displayed",
+			"item": [
+				{
+					"name": "Post cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json()\r",
+									"\r",
+									"pm.collectionVariables.set('MyCartId', response.cartId);\r",
+									"\r",
+									"pm.test('Cart is created', ()=>{\r",
+									"    pm.expect(response.created).to.be.true\r",
+									"})\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/carts",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"carts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add items to cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var response = pm.response.json()\r",
+									"\r",
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test('Item is added', ()=>{\r",
+									"    pm.expect(response.created).to.be.true\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"productId\": 4643\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/carts/{{MyCartId}}/items",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"carts",
+								"{{MyCartId}}",
+								"items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Order with incorret cartId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response = pm.response.json()\r",
+									"\r",
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error was thrown\", ()=>{\r",
+									"    pm.expect(response.error).to.exist\r",
+									"    pm.expect(response.error).to.contain(\"cartId\")\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cartId\": \"{{$randomUUID}}\",\r\n    \"customerName\": \"{{$randomFullName}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/orders",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"orders"
+							]
+						},
+						"description": "This test is performed, to check if when incorrect basket id is passed, order cannot be fulfilled"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "MyCartId",
+			"value": ""
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ItemInBasketId",
+			"value": ""
+		},
+		{
+			"key": "OrderedItem",
+			"value": ""
+		},
+		{
+			"key": "lastOrderId",
+			"value": ""
+		}
+	]
+}

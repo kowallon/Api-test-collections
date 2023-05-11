@@ -1,0 +1,339 @@
+{
+	"info": {
+		"_postman_id": "0c919d8e-ef1b-4aad-bc00-a1bf45641316",
+		"name": "Trello",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20193986"
+	},
+	"item": [
+		{
+			"name": "Create board",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let response = pm.response.json()\r",
+							"\r",
+							"pm.collectionVariables.set(\"MyPostmanBoardId\", response.id);\r",
+							"\r",
+							"console.log(pm.collectionVariables.get(\"MyPostmanBoardId\"))"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/1/boards/?name=My Postman Board&key={{apiKey}}&token={{token}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"1",
+						"boards",
+						""
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "My Postman Board"
+						},
+						{
+							"key": "key",
+							"value": "{{apiKey}}"
+						},
+						{
+							"key": "token",
+							"value": "{{token}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create new list",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let response = pm.response.json()\r",
+							"\r",
+							"pm.collectionVariables.set(\"ToDoListId\", response.id);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/1/lists?name=To do&idBoard={{MyPostmanBoardId}}&key={{apiKey}}&token={{token}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"1",
+						"lists"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "To do"
+						},
+						{
+							"key": "idBoard",
+							"value": "{{MyPostmanBoardId}}"
+						},
+						{
+							"key": "key",
+							"value": "{{apiKey}}"
+						},
+						{
+							"key": "token",
+							"value": "{{token}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create in progress list",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let response = pm.response.json()\r",
+							"\r",
+							"pm.collectionVariables.set(\"InProgressListId\", response.id);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/1/lists?name=In progress&idBoard={{MyPostmanBoardId}}&key={{apiKey}}&token={{token}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"1",
+						"lists"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "In progress"
+						},
+						{
+							"key": "idBoard",
+							"value": "{{MyPostmanBoardId}}"
+						},
+						{
+							"key": "key",
+							"value": "{{apiKey}}"
+						},
+						{
+							"key": "token",
+							"value": "{{token}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add new Card for To do",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let response = pm.response.json();\r",
+							"\r",
+							"pm.collectionVariables.set(\"FirstCardId\", response.id)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/1/cards?idList={{ToDoListId}}&key={{apiKey}}&token={{token}}&name=Post card with API",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"1",
+						"cards"
+					],
+					"query": [
+						{
+							"key": "idList",
+							"value": "{{ToDoListId}}"
+						},
+						{
+							"key": "key",
+							"value": "{{apiKey}}"
+						},
+						{
+							"key": "token",
+							"value": "{{token}}"
+						},
+						{
+							"key": "name",
+							"value": "Post card with API"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Move Post card with Api to 'In progress list'",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let response = pm.response.json()\r",
+							"\r",
+							"pm.test(\"Status code is 200\", ()=> {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Task shouldn't be closed\", ()=>{\r",
+							"    pm.expect(response.closed).to.be.false\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Card should be in 'in progress' list\", ()=>{\r",
+							"    pm.expect(response.idList).to.eql(pm.collectionVariables.get(\"InProgressListId\"));\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/ecmascript",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/1/cards/:id?key={{apiKey}}&token={{token}}&idList={{InProgressListId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"1",
+						"cards",
+						":id"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{apiKey}}"
+						},
+						{
+							"key": "token",
+							"value": "{{token}}"
+						},
+						{
+							"key": "idList",
+							"value": "{{InProgressListId}}"
+						}
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{FirstCardId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": "Token here",
+			"type": "string"
+		},
+		{
+			"key": "apiKey",
+			"value": "api key here",
+			"type": "string"
+		},
+		{
+			"key": "MyPostmanBoardId",
+			"value": ""
+		},
+		{
+			"key": "ToDoListId",
+			"value": ""
+		},
+		{
+			"key": "InProgressListId",
+			"value": ""
+		},
+		{
+			"key": "FirstCardId",
+			"value": ""
+		}
+	]
+}
