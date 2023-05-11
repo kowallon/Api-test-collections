@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "4e7003ac-6b71-4174-8312-815e411081bd",
+		"_postman_id": "f852cf3f-9354-47ff-86c1-f18a87a489af",
 		"name": "Grocery",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "20193986"
+		"_exporter_id": "21342971",
+		"_collection_link": "https://restless-eclipse-721470.postman.co/workspace/New-Team-Workspace~669f5b7f-30f8-400b-a496-e61b4e0f8a2d/collection/21342971-f852cf3f-9354-47ff-86c1-f18a87a489af?action=share&creator=21342971&source=collection_link"
 	},
 	"item": [
 		{
@@ -181,7 +182,9 @@
 									"pm.test(\"1 item is added\", ()=>{\r",
 									"    pm.expect(response[0].quantity).to.be.a(\"number\")\r",
 									"    pm.expect(response[0].quantity).to.eql(1)\r",
-									"})"
+									"})\r",
+									"\r",
+									"postman.setNextRequest(\"Order\")"
 								],
 								"type": "text/javascript"
 							}
@@ -217,13 +220,26 @@
 					"response": []
 				},
 				{
-					"name": "register client(do not run in runner)",
+					"name": "register client(skipped)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let res = pm.response.json()\r",
+									"\r",
+									"pm.collectionVariables.set(\"token\", res.accessToken);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n   \"clientName\": \"My PC\",\r\n   \"clientEmail\": \"post@practice.com\"\r\n}",
+							"raw": "{\r\n   \"clientName\": \"My PC\",\r\n   \"clientEmail\": \"post995678@practice.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -237,62 +253,6 @@
 							],
 							"path": [
 								"api-clients"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Opdate order",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 204\", function () {\r",
-									"    pm.response.to.have.status(204);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PATCH",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"customerName\" : \"I .C Wieners\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/orders/:orderId",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"orders",
-								":orderId"
-							],
-							"variable": [
-								{
-									"key": "orderId",
-									"value": "tcH0vOxOUPlpZ4qYM_OcM"
-								}
 							]
 						}
 					},
@@ -350,6 +310,62 @@
 							],
 							"path": [
 								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Opdate order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"customerName\" : \"I .C Wieners\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/orders/:orderId",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"orders",
+								":orderId"
+							],
+							"variable": [
+								{
+									"key": "orderId",
+									"value": "{{lastOrderId}}"
+								}
 							]
 						}
 					},
@@ -871,6 +887,11 @@
 		{
 			"key": "lastOrderId",
 			"value": ""
+		},
+		{
+			"key": "baseURL",
+			"value": "",
+			"type": "string"
 		}
 	]
 }
