@@ -1,0 +1,101 @@
+{
+	"info": {
+		"_postman_id": "ccfaa672-da6d-4303-abcf-00f3a455550e",
+		"name": "Data set",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21342971",
+		"_collection_link": "https://restless-eclipse-721470.postman.co/workspace/New-Team-Workspace~669f5b7f-30f8-400b-a496-e61b4e0f8a2d/collection/21342971-ccfaa672-da6d-4303-abcf-00f3a455550e?action=share&creator=21342971&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "Create company",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.collectionVariables.get(\"companies\") != \"Yandex\") {;",
+							"    postman.setNextRequest(\"Create company\")",
+							"    }",
+							"    else{",
+							"    postman.setNextRequest(null)",
+							"    }",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if(pm.collectionVariables.get(\"companies\").length > 0){",
+							"    var companies = pm.collectionVariables.get(\"companies\")",
+							"    }",
+							"    else{",
+							"        var companies = [\"Gooooooogle\", \"Yahoo!\", \"Yandex\"]",
+							"    }",
+							"",
+							"console.log(companies)",
+							"var currentCompany = companies.shift()",
+							"",
+							"pm.collectionVariables.set(\"currentCompany\", currentCompany);",
+							"",
+							"//console.log(pm.collectionVariables.get(\"currentCompany\"))",
+							"",
+							"pm.collectionVariables.set(\"companies\", companies);",
+							"",
+							"var isArrEmpty = false",
+							"",
+							"if(pm.collectionVariables.get(\"companies\").length == 0){",
+							"    isArrEmpty = true",
+							"}",
+							"pm.collectionVariables.set(\"isArrEmpty\", isArrEmpty);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"{{currentCompany}}\"\n}"
+				},
+				"url": {
+					"raw": "https://httpbin.org/post",
+					"protocol": "https",
+					"host": [
+						"httpbin",
+						"org"
+					],
+					"path": [
+						"post"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "currentCompany",
+			"value": ""
+		},
+		{
+			"key": "companies",
+			"value": ""
+		},
+		{
+			"key": "isArrEmpty",
+			"value": ""
+		}
+	]
+}
